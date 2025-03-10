@@ -1,5 +1,13 @@
 .container {
+  height: 90%;
+
   flex-grow: 1;
+
+  overflow-x: hidden;
+  overflow-y: auto;
+
+  scrollbar-width: thin;
+  scrollbar-color: rgba(161, 161, 170, 1) transparent; 
 }
 
 .table {
@@ -26,12 +34,4 @@ th {
 
   color: rgba(161, 161, 170, 1);
   text-align: left;
-}
-
-td {
-  height: 60px;
-
-  padding: 0 12px;
-
-  border-top: 1px solid rgba(65, 65, 68, 1);
 }
