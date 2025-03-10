@@ -1,0 +1,42 @@
+.container {
+  width: 234px;
+  height: 100vh;
+
+  padding: 0 20px 7px;
+
+  background-color: rgba(39, 39, 42, 1);
+}
+
+.title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  padding: 8px 0;
+
+  color: rgba(161, 161, 170, 1);
+
+  border-top: 1px solid rgba(65, 65, 68, 1);
+  border-bottom: 1px solid rgba(65, 65, 68, 1);
+
+  & .note {
+    font-size: 10px;
+  }
+}
+
+.list {
+  margin: 0;
+  padding: 0;
+  
+  list-style-type: none;
+}
+
+.navLink {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+
+  padding: 5px 0;
+
+  cursor: pointer;
+}

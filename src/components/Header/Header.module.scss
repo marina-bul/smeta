@@ -1,0 +1,26 @@
+.header {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+
+  padding: 10px 20px 0;
+
+  color: rgba(161, 161, 170, 1)
+}
+
+.icon,
+.link {
+  cursor: pointer;
+}
+
+.link {
+  display: block;
+
+  padding-bottom: 10px;
+  
+  &.active {
+    color: rgba(255, 255, 255, 1);
+
+    border-bottom: 2px solid rgba(255, 255, 255, 1);
+  }
+}
