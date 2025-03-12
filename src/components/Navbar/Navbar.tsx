@@ -37,7 +37,7 @@ export const Navbar = () => {
       <ul className={styles.list}>
         {navLinks.map((link) => (
           <li 
-            className={`${styles.navLink} ${link.isActive && styles.active}`} 
+            className={`${styles.nav_link} ${link.isActive && styles.active}`} 
             key={link.label}
           >
             <ItemIcon />

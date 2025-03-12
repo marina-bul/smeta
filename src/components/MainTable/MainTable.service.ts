@@ -1,5 +1,4 @@
-import { RowNode, RowParams } from './MainTable.types'
-import { ChangeNodesResponse } from "./MainTable.types";
+import type { RowNode, RowParams, ChangeNodesResponse } from './MainTable.types'
 
 class ServerActions {
   private eID
@@ -32,7 +31,7 @@ class ServerActions {
       });
 
       if(!response.ok) {
-        console.error('Что-то пошло не так при создании строки. Попробуйте обновить приложение')
+        console.error('Ошибка при создании строки. Попробуйте обновить приложение')
       }
 
       const result = await response.json()
@@ -45,18 +44,18 @@ class ServerActions {
   }
 
   async removeRow (rowId: number) {
-  try {
-    const response = await fetch(`${this.url}/v1/outlay-rows/entity/${this.eID}/row/${rowId}/delete`, {
-      method: 'DELETE'
-    });
+    try {
+      const response = await fetch(`${this.url}/v1/outlay-rows/entity/${this.eID}/row/${rowId}/delete`, {
+        method: 'DELETE'
+      });
 
-    if(!response.ok) {
-      console.error('Что-то пошло не так при удалении строки. Попробуйте обновить приложение')
+      if(!response.ok) {
+        console.error('Ошибка при удалении строки. Попробуйте обновить приложение')
+      }
+    } catch (error) {
+      console.error('Ошибка на сервере при удалении строки:', error)
     }
-  } catch (error) {
-    console.error('Ошибка на сервере при удалении строки:', error)
   }
-}
 
 async editRow (rowId: number, rowParams: RowNode): Promise<ChangeNodesResponse> {
   try {
@@ -69,7 +68,7 @@ async editRow (rowId: number, rowParams: RowNode): Promise<ChangeNodesResponse> 
     });
 
     if(!response.ok) {
-      console.error('Что-то пошло не так при обновлении строки. Попробуйте обновить приложение')
+      console.error('Ошибка при обновлении строки. Попробуйте обновить приложение')
     }
 
     const result = await response.json()
@@ -80,10 +79,9 @@ async editRow (rowId: number, rowParams: RowNode): Promise<ChangeNodesResponse> 
     throw error
   }
 }
-
 }
 
-class ClientActions {
+class TreeActions {
   constructor() {}
 
   addNode (tree: RowNode[], parentId: number | null, newNode: RowNode): RowNode[] {
@@ -126,4 +124,4 @@ class ClientActions {
 
 
 export const serverActions = new ServerActions()
-export const clientActions = new ClientActions()
+export const treeActions = new TreeActions()

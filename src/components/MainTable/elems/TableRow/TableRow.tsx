@@ -79,12 +79,11 @@ export const TableRow: FC<TableRowProps> = ({
         onDoubleClick={handleDblClick}
       >
         <td 
-          className={styles.iconContainer}
           style={{ paddingLeft: `${level * 20}px` }}
           onMouseEnter={handleActionsHover}
           onMouseLeave={() => setIsActionsVisible(false)}
         >
-          <div className={styles.iconWrapper}>
+          <div>
             {isActionsVisible ? (
                 <div className={styles.actions}>
                   <NewIcon 

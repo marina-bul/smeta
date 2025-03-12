@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 
 import { TableRow } from './elems/TableRow/TableRow'
-import { serverActions, clientActions } from './MainTable.service'
+import { serverActions, treeActions } from './MainTable.service'
 
 import styles from './MainTable.module.scss'
 
@@ -36,14 +36,14 @@ export const MainTable = () => {
           child: [], 
           id: Date.now()
         }
-        setRows((prev) => clientActions.addNode(prev, parentId, emptyNode ))
+        setRows((prev) => treeActions.addNode(prev, parentId, emptyNode ))
       return
     }
 
     serverActions.addRow(parentId, params).then((data) => {
       const newNode = {...data.current, parentId: parentId, child: []}
 
-      setRows((prev) => clientActions.editNode(prev, params.id, newNode ))
+      setRows((prev) => treeActions.editNode(prev, params.id, newNode ))
     })
 
   }
@@ -53,16 +53,14 @@ export const MainTable = () => {
     serverActions.editRow(rowData.id, rowData).then((data) => {
       const newNode = {...data.current, parentId: rowData.parentId, child: rowData.child}
 
-      setRows((prev) => clientActions.editNode(prev, data.current.id, newNode))
+      setRows((prev) => treeActions.editNode(prev, data.current.id, newNode))
     })
 
   }
 
   const handleRemoveRow = ( id: number ) => { 
     serverActions.removeRow(id).then(() => {
-
-
-      setRows((prev) => clientActions.removeNode(prev, id));
+      setRows((prev) => treeActions.removeNode(prev, id));
     }).catch((error) => {
       console.error('Ошибка при удалении строки:', error);
     });
@@ -98,6 +96,7 @@ export const MainTable = () => {
             <th>Сметная прибыль</th>
           </tr>
         </thead>
+
         <tbody>
           {rows.map((row) => (
             <TableRow 
