@@ -4,9 +4,6 @@ import { MainTable } from './components/MainTable/MainTable'
 
 import './App.style.scss'
 
-
-const eID = 148763
-
 export function App() {
     return (
         <>

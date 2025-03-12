@@ -1,4 +1,4 @@
-.completed input {
+.completed .input {
   color: rgba(255, 255, 255, 1);
 
   border-color: transparent;
@@ -6,11 +6,13 @@
   cursor: default;
 }
 
-.edited input {
+.edited .input,
+.new .input {
   color: rgba(113, 113, 122, 1);
 }
 
-input {
+.input {
+  width: 100%;
   padding: 10px;
 
   background-color: transparent;
@@ -20,15 +22,29 @@ input {
 }
 
 td {
+  width: 200px;
   height: 60px;
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 
   padding: 0 12px;
 
   border-top: 1px solid rgba(65, 65, 68, 1);
+
+  &:first-of-type {
+    width: 110px;
+  }
+
+  &:nth-child(2) {
+    width: auto
+  }
 }
 
 .icon {
   cursor: pointer;
+  z-index: 10;
 }
 
 .actions {

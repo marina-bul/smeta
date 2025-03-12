@@ -1,45 +1,85 @@
 import { useEffect, useState } from 'react'
 
+import { TableRow } from './elems/TableRow/TableRow'
+import { serverActions, clientActions } from './MainTable.service'
+
 import styles from './MainTable.module.scss'
-import { RowCosts, TableRow } from './elems/TableRow/TableRow'
+
+import type { RowType, RowNode, RowParams } from './MainTable.types'
+
+
+const EMPTY_ROW = {
+  rowName: '',
+  salary: 0,
+  equipmentCosts: 0,
+  overheads: 0,
+  estimatedProfit: 0,
+  machineOperatorSalary: 0,
+  mainCosts: 0,
+  materials: 0,
+  mimExploitation: 0,
+  supportCosts: 0,
+  total: 0
+}
 
 
 export const MainTable = () => {
-  const [rows, setRows] = useState<RowCosts[]>([])
+  const { addRow, editRow, removeRow, fetchRows } = serverActions
 
-  const addEmptyRow = (parentId: number | null = null ) => {
-    setRows((prev) => [...prev, {
-      parentId,
-      id: Date.now(),
-      rowName: '',
-      salary: 0,
-      equipmentCosts: 0,
-      overheads: 0,
-      estimatedProfit: 0,
-    }])
-  }
+  const [rows, setRows] = useState<RowNode[]>([])
 
-  const handleEditRow = ( rowData: RowCosts ) => {
-    setRows((prev) => {
-      const index = prev.findIndex((row) => row.id === rowData.id)
-      prev[index] = rowData
 
-      return prev
+  const handleAddRow = (parentId: number | null = null, params?: RowParams ) => {
+    if(!params) {
+        const emptyNode = {
+          parentId, 
+          ...EMPTY_ROW, 
+          child: [], 
+          id: Date.now()
+        }
+        setRows((prev) => clientActions.addNode(prev, parentId, emptyNode ))
+      return
+    }
+
+    addRow(parentId, params).then((data) => {
+      const newNode = {...data.current, parentId: parentId, child: []}
+
+      setRows((prev) => clientActions.editNode(prev, params.id, newNode ))
     })
+
   }
 
-  const handleRemoveRow = ( id: number ) => {
-    setRows((prev) => {
-      return prev.filter((row) => row.id !== id)
+  const handleEditRow = ( rowData: RowNode ) => {
+
+    editRow(rowData.id, rowData).then((data) => {
+      const newNode = {...data.current, parentId: rowData.parentId, child: rowData.child}
+
+      setRows((prev) => clientActions.editNode(prev, data.current.id, newNode))
     })
+
   }
 
-  console.log(rows)
+  const handleRemoveRow = ( id: number ) => { 
+    removeRow(id).then(() => {
+
+
+      setRows((prev) => clientActions.removeNode(prev, id));
+    }).catch((error) => {
+      console.error('Ошибка при удалении строки:', error);
+    });
+  }
+
+  const handleSubmit = (rowData: RowNode, mode: RowType) => {
+    mode === 'new'
+    ? handleAddRow(rowData.parentId, rowData) 
+    : handleEditRow(rowData)
+  }
 
   useEffect(() => {
-    const rowData = []
+    fetchRows().then(data => {
+      data.length > 0 ? setRows([...data]) : handleAddRow()
+    })
 
-    if(rowData.length === 0) addEmptyRow()
   }, [])
 
   return (
@@ -63,11 +103,12 @@ export const MainTable = () => {
           {rows.map((row) => (
             <TableRow 
               key={row.id}
-              mode={row?.rowName === '' ? 'edited' : 'completed'} 
+              mode={row.rowName === '' ? 'new' : 'completed'} 
               rowData={row} 
-              onAddRow={addEmptyRow} 
+              level={0}
+              onAddRow={handleAddRow} 
               onRemoveRow={handleRemoveRow}
-              onSubmit={handleEditRow}
+              onSubmit={handleSubmit}
             />
           ))}
         </tbody>

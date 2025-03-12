@@ -6,29 +6,33 @@ import TrashIcon from '../../icons/trashIcon.svg'
 import styles from './TableRow.module.scss'
 
 import type { ChangeEvent, KeyboardEvent, FC } from 'react'
-
-export interface RowCosts {
-  id: number
-  parentId: number | null
-  rowName: string
-  salary: number
-  equipmentCosts: number
-  overheads: number
-  estimatedProfit: number
-}
+import type { RowType, RowNode } from '../../MainTable.types'
 
 interface TableRowProps {
-  mode: 'edited' | 'completed' 
-  rowData: RowCosts
+  mode: RowType 
+  rowData: RowNode
+  level: number
   onAddRow: (parentId: number | null ) => void
   onRemoveRow: (rowId: number ) => void
-  onSubmit?: (rowData: RowCosts) => void
+  onSubmit?: (rowData: RowNode, mode: RowType) => void
 }
 
+export const TableRow: FC<TableRowProps> = ({ 
+  mode, 
+  rowData, 
+  level,
+  onAddRow, 
+  onRemoveRow, 
+  onSubmit 
+}) => {
 
-export const TableRow: FC<TableRowProps> = ({ mode, rowData, onAddRow, onRemoveRow, onSubmit }) => {
-
-  const [fields, setFields] = useState(rowData)
+  const [fields, setFields] = useState({
+    rowName: rowData.rowName,
+    salary: rowData.salary,
+    equipmentCosts: rowData.equipmentCosts,
+    overheads: rowData.overheads,
+    estimatedProfit: rowData.estimatedProfit,
+  })
   const [rowMode, setRowMode] = useState(mode)
   const [isActionsVisible, setIsActionsVisible] = useState(false)
 
@@ -38,106 +42,96 @@ export const TableRow: FC<TableRowProps> = ({ mode, rowData, onAddRow, onRemoveR
   };
 
   const handleActionsHover = () => {
-    if(rowMode === 'edited') return
+    if(['edited','new'].includes(rowMode)) return
 
     setIsActionsVisible(true)
+  }
+
+  const handleDblClick = () => {
+    if(rowMode === 'completed') {
+      setRowMode('edited')
+    }
   }
 
   const handleSubmit = useCallback((event: KeyboardEvent) => {
     if (event.key !== "Enter") return
 
-    const numericValues = {
-      ...fields,
-      id: rowData.id,
-      parentId: rowData.parentId,
+    const modifiedValues = {
+      ...rowData,
+      rowName: fields.rowName,
       salary: Number(fields.salary) || 0,
       equipmentCosts: Number(fields.equipmentCosts) || 0,
       overheads: Number(fields.overheads) || 0,
       estimatedProfit: Number(fields.estimatedProfit) || 0
     };
 
-    if(onSubmit) onSubmit(numericValues)
+    if(onSubmit) onSubmit(modifiedValues, rowMode)
 
     setRowMode('completed')
 
   }, [fields, onSubmit]);
 
   return (
-          <tr 
-            className={styles[rowMode]} 
-            onKeyDown={handleSubmit} 
-            onDoubleClick={() => setRowMode('edited')}
-          >
+    <>
+      <tr 
+        className={styles[rowMode]} 
+        onKeyDown={handleSubmit} 
+        onDoubleClick={handleDblClick}
+      >
+        <td 
+          className={styles.iconContainer}
+          style={{ paddingLeft: `${level * 20}px` }}
+          onMouseEnter={handleActionsHover}
+          onMouseLeave={() => setIsActionsVisible(false)}
+        >
+          <div className={styles.iconWrapper}>
+            {isActionsVisible ? (
+                <div className={styles.actions}>
+                  <NewIcon 
+                    className={styles.icon} 
+                    onClick={() => onAddRow(rowData.id)} 
+                  />
+                  <TrashIcon 
+                    className={styles.icon} 
+                    onClick={() => onRemoveRow(rowData.id)} 
+                  />
+                </div>
+              ) : (
+                <NewIcon className={styles.icon} />
+              )
+            }
+          </div>
+        </td>
 
-              <td 
-                className={styles.iconContainer}
-                onMouseEnter={handleActionsHover}
-                onMouseLeave={() => setIsActionsVisible(false)}
-              >
-                {isActionsVisible ? (
-                  <div className={styles.actions}>
-                    <NewIcon 
-                      className={styles.icon} 
-                      onClick={() => onAddRow(rowData.id)} 
-                    />
-                    <TrashIcon 
-                      className={styles.icon} 
-                      onClick={() => onRemoveRow(rowData.id)} 
-                    />
-                  </div>
-                ) : (
-                  <NewIcon className={styles.icon} />
-                )
-              }
 
-              </td>
-              <td>
-                <input 
-                  type="text" 
-                  name='rowName' 
-                  value={fields.rowName}
-                  readOnly={rowMode === 'completed'}
-                  onChange={handleFieldChange}
-                 />
-              </td>
-              <td>
-                <input 
-                  type="text" 
-                  name='salary' 
-                  value={fields.salary}
-                  readOnly={rowMode === 'completed'}
-                  onChange={handleFieldChange}
-                 />
-              </td>
-              <td>
-                <input 
-                  type="text" 
-                  name='equipmentCosts' 
-                  value={fields.equipmentCosts}
-                  readOnly={rowMode === 'completed'}
-                  onChange={handleFieldChange}
-                 />
-              </td>
-              <td>
-                <input 
-                  type="text" 
-                  name='overheads' 
-                  value={fields.overheads}
-                  readOnly={rowMode === 'completed'}
-                  onChange={handleFieldChange}
-                 />
-              </td>
-              <td>
-                <input 
-                  type="text" 
-                  name='estimatedProfit' 
-                  value={fields.estimatedProfit}
-                  readOnly={rowMode === 'completed'}
-                  onChange={handleFieldChange}
-                 />
-              </td>
+        {Object.entries(fields).map(([key, value]) => (
+          <td>
+            <input 
+              type="text" 
+              className={styles.input}
+              name={key}
+              value={value}
+              readOnly={rowMode === 'completed'}
+              onChange={handleFieldChange}
+            />
+          </td>
+        ))}
 
-          </tr>
+      </tr>
 
+      {rowData.child.length > 0 &&
+        rowData.child
+          .map((child) => (
+            <TableRow 
+              key={child.id} 
+              rowData={child} 
+              mode={child.rowName === '' ? 'new' : 'completed'}
+              level={level + 1}
+              onAddRow={onAddRow}
+              onRemoveRow={onRemoveRow}
+              onSubmit={onSubmit}
+            />
+          ))}
+    </>
   )
 }
