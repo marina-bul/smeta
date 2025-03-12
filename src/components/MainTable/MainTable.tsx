@@ -24,7 +24,6 @@ const EMPTY_ROW = {
 
 
 export const MainTable = () => {
-  const { addRow, editRow, removeRow, fetchRows } = serverActions
 
   const [rows, setRows] = useState<RowNode[]>([])
 
@@ -41,7 +40,7 @@ export const MainTable = () => {
       return
     }
 
-    addRow(parentId, params).then((data) => {
+    serverActions.addRow(parentId, params).then((data) => {
       const newNode = {...data.current, parentId: parentId, child: []}
 
       setRows((prev) => clientActions.editNode(prev, params.id, newNode ))
@@ -51,7 +50,7 @@ export const MainTable = () => {
 
   const handleEditRow = ( rowData: RowNode ) => {
 
-    editRow(rowData.id, rowData).then((data) => {
+    serverActions.editRow(rowData.id, rowData).then((data) => {
       const newNode = {...data.current, parentId: rowData.parentId, child: rowData.child}
 
       setRows((prev) => clientActions.editNode(prev, data.current.id, newNode))
@@ -60,7 +59,7 @@ export const MainTable = () => {
   }
 
   const handleRemoveRow = ( id: number ) => { 
-    removeRow(id).then(() => {
+    serverActions.removeRow(id).then(() => {
 
 
       setRows((prev) => clientActions.removeNode(prev, id));
@@ -76,7 +75,7 @@ export const MainTable = () => {
   }
 
   useEffect(() => {
-    fetchRows().then(data => {
+    serverActions.fetchRows().then(data => {
       data.length > 0 ? setRows([...data]) : handleAddRow()
     })
 

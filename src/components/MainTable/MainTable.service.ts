@@ -84,23 +84,7 @@ async editRow (rowId: number, rowParams: RowNode): Promise<ChangeNodesResponse> 
 }
 
 class ClientActions {
-  private emptyRow: Omit<RowParams, 'id'>
-
-  constructor() {
-    this.emptyRow = {
-      rowName: '',
-      salary: 0,
-      equipmentCosts: 0,
-      overheads: 0,
-      estimatedProfit: 0,
-      machineOperatorSalary: 0,
-      mainCosts: 0,
-      materials: 0,
-      mimExploitation: 0,
-      supportCosts: 0,
-      total: 0
-    }
-  }
+  constructor() {}
 
   addNode (tree: RowNode[], parentId: number | null, newNode: RowNode): RowNode[] {
     if(tree.length === 0) return [newNode]

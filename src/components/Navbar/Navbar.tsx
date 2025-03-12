@@ -4,21 +4,21 @@ import ArrowIcon from './icons/arrow.svg'
 import styles from './Navbar.module.scss'
 
 const navLinks = [
-  'По проекту',
-  'Объекты',
-  'РД',
-  'МТО',
-  'СМР',
-  'График',
-  'МиМ',
-  'Рабочие',
-  'Капвложения',
-  'Бюджет',
-  'Финансирование',
-  'Панорамы',
-  'Камеры',
-  'Поручения',
-  'Контрагенты'
+  { label: 'По проекту' },
+  { label: 'Объекты' },
+  { label: 'РД' },
+  { label: 'МТО' },
+  { label: 'СМР', isActive: true },
+  { label: 'График' },
+  { label: 'МиМ' },
+  { label: 'Рабочие' },
+  { label: 'Капвложения' },
+  { label: 'Бюджет' },
+  { label: 'Финансирование' },
+  { label: 'Панорамы' },
+  { label: 'Камеры' },
+  { label: 'Поручения' },
+  { label: 'Контрагенты' }
 ]
 
 
@@ -36,9 +36,12 @@ export const Navbar = () => {
       </div>
       <ul className={styles.list}>
         {navLinks.map((link) => (
-          <li className={styles.navLink} key={link}>
+          <li 
+            className={`${styles.navLink} ${link.isActive && styles.active}`} 
+            key={link.label}
+          >
             <ItemIcon />
-            <span>{link}</span>
+            <span>{link.label}</span>
           </li>
         ))}
       </ul>
